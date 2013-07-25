@@ -14,15 +14,13 @@ class ImageConverter {
     image_transport::ImageTransport it_;
     image_transport::Subscriber image_sub_;
     image_transport::Publisher image_pub_;
-    string name_ = "/ardrone/front/image_raw"
 
 public:
     /* constructor method called on instantiation of ImageConverter */
     ImageConverter(string topic) : it_(nh_) {
         /* subscribe to ardrone camera feed and publish it out as a new message */
-	name_ = topic;
         image_pub_ = it_.advertise("converted", 1);
-        image_sub_ = it_.subscribe(string, 1, &ImageConverter::imageCb, this);
+        image_sub_ = it_.subscribe(topic, 1, &ImageConverter::imageCb, this);
 
         cv::namedWindow(WINDOW);
     }
@@ -54,7 +52,7 @@ public:
 
 int main(int argc, char *argv[]) {
     ros::init(argc, argv, "image_converter");
-    ImageConverter ic("/ardrone/front/image_raw") ;
+    ImageConverter converter("/ardrone/front/image_raw");
     cout << "This program is converting messages" << endl;
     ros::spin();
     return 0;
