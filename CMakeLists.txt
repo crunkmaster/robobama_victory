@@ -17,4 +17,5 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_executable(drone_video src/video/drone_video.cpp)
+rosbuild_add_executable(navdata_listener src/video/tracking.cpp)
 target_link_libraries(drone_video ${ROS_LIBRARIES} ${Boost_LIBRARIES})
