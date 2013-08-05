@@ -19,7 +19,7 @@ def navdataCallback(msg):
 	tags_yc = msg.tags_yc
 	tags_distance = msg.tags_distance
 
-	thresh = 10
+	thresh = 20
 	distance_thresh = 10
 	
 	# basically hover if you don't see the target
@@ -33,24 +33,32 @@ def navdataCallback(msg):
 		x_pos = tags_xc[0] * .64 
 		y_pos = tags_yc[0] * .36
 		tags_distance = tags_distance[0]
+
 		print "tags_distance: {0}".format(tags_distance)
 
 		# these are distances from the middle of the camera view
 		x_distance = abs(320 - x_pos)
 		y_distance = abs(230 - y_pos)
-		# this is keeping it 100 units away from the target
+		# this is keeping it 80 units away from the target
 		tag_offset = abs(80 - tags_distance)
 
 		# centering the target in the left / right direction
 		if x_distance > thresh:
 			if x_pos > 320:
 				trajectory.linear.y = -0.1
+				trajectory.linear.x = 0.0
+				trajectory.linear.z = 0.0
+				flight_pub.publish(trajectory)
 				print "going right"
 			if x_pos < 320:
 				trajectory.linear.y = 0.1
+				trajectory.linear.x = 0.0
+				trajectory.linear.z = 0.0
+				flight_pub.publish(trajectory)
 				print "going left"
 		else:
 			trajectory.linear.y = 0.0
+			flight_pub.publish(trajectory)
 			print "centered left / right"
 		
 		# #centering the target in the up / down direction
@@ -66,15 +74,22 @@ def navdataCallback(msg):
 		#     print "centered up / down"
 		
 		# maintaining proper distance from the target
-		if tag_offset > distance_thresh:
-		    if tags_distance < 80:
-		        trajectory.linear.x = -0.2
-		        print "moving away"
-		    if tags_distance > 80:
-		        trajectory.linear.x = 0.2
-		        print "moving closer"
-		else:
-		    trajectory.linear.x = 0.0
+		# if tag_offset > distance_thresh:
+		#     if tags_distance < 80:
+		#         trajectory.linear.x = -0.1
+		#         trajectory.linear.y = 0.0
+		#         trajectory.linear.z = 0.0
+		#         flight_pub.publish(trajectory)
+		#         print "moving away"
+		#     if tags_distance > 80:
+		#         trajectory.linear.x = 0.1
+		#         trajectory.linear.y = 0.0
+		#         trajectory.linear.z = 0.0
+		#         flight_pub.publish(trajectory)
+		#         print "moving closer"
+		# else:
+		#     trajectory.linear.x = 0.0
+		#     flight_pub.publish(trajectory)
 
 	except IndexError:
 		print "can't see target"
