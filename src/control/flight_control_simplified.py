@@ -2,6 +2,7 @@
 import roslib; roslib.load_manifest('robobama_victory')
 import rospy
 import sys
+import os
 
 from std_msgs.msg import Empty
 from nav_msgs.msg import Odometry
@@ -9,6 +10,9 @@ from geometry_msgs.msg import Twist
 from ardrone_autonomy.msg import Navdata
 
 trajectory = Twist()
+
+def clear():
+        os.system('cls' if os.name=='nt' else 'clear')
 
 def navdataCallback(msg):
         global trajectory
@@ -41,7 +45,6 @@ def navdataCallback(msg):
 
         tags_distance = tags_distance[0]
 
-        print "tags_distance: {0}".format(tags_distance)
         # these are distances from the middle of the camera's
         # 640x360 view
         x_distance = abs(320 - x_pos)
@@ -51,28 +54,39 @@ def navdataCallback(msg):
         distances = {'x': x_distance, 'y': y_distance, 
                      'tag': tags_distance}
         
-        ## essentially, what this code does is select which variable
-        ## needs the greatest adjustment, and then only generate a trajectory
-        ## based on that variable...
+        ## select the variable that needs the greatest adjustment
+        ## and then only generate a trajectory based on that variable
         ## this adjustment variable is determined at each call of navdataCallback
         ## or per each image message received from the drone...
-        adjustment_variable = max(distance, key = distance.get)
+        adjustment_variable = max(distances, key = distances.get)
 
         if adjustment_variable == 'x' and x_distance > thresh:
                 if x_pos > 320:
                         trajectory.linear.y = -0.1
+			print "adjusting left"
+                        clear()
                 if x_pos < 320:
                         trajectory.linear.y = 0.1
+			print "adjusting right"
+                        clear()
         elif adjustment_variable == 'y' and y_distance > thresh:
                 if y_pos > 180:
                         trajectory.linear.z = -0.2
+			print "adjusting down"
+                        clear()
                 if y_pos < 180:
                         trajectory.linear.z = 0.3
+			print "adjusting up"
+                        clear()
         elif adjustment_variable == 'tag' and tag_offset > distance_thresh:
                 if tags_distance > 80:
                         trajectory.linear.x = 0.1
+                        print "adjusting forward"
+                        clear()
                 if tags_distance < 80:
                         trajectory.linear.x = -0.1
+			print "adjusting backward"
+                        clear()
                         
         flight_pub.publish(trajectory)
         
@@ -84,14 +98,7 @@ if __name__ == "__main__":
         land = rospy.Publisher('/ardrone/land', Empty).publish
 
         flight_pub = rospy.Publisher('/cmd_vel', Twist)
-
-        rospy.sleep(4)
-        #takeoff()
         print "taking off"
-
-        # this atexit stuff doesn't even work, so don't bother.
-        import atexit
-        atexit.register(land) # make sure on exit, the drone will land
 
         # this should hopefully make it so a keyboard interrupt will
         # land the drone...
@@ -103,4 +110,3 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
                 print "landing"
                 land()
-                
