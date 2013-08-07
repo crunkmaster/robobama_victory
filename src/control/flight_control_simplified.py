@@ -93,6 +93,8 @@ if __name__ == "__main__":
         import atexit
         atexit.register(land) # make sure on exit, the drone will land
 
+        # this should hopefully make it so a keyboard interrupt will
+        # land the drone...
         try:
                 # start target tracking using navdata callback function
                 navdata_sub = rospy.Subscriber('/ardrone/navdata', Navdata,
