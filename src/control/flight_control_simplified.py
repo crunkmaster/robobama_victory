@@ -92,15 +92,14 @@ if __name__ == "__main__":
         land = rospy.Publisher('/ardrone/land', Empty).publish
 
         flight_pub = rospy.Publisher('/cmd_vel', Twist)
-        print "taking off"
-
-        # this should hopefully make it so a keyboard interrupt will
-        # land the drone...
+	print "--Publishers Created--"
         try:
                 # start target tracking using navdata callback function
                 navdata_sub = rospy.Subscriber('/ardrone/navdata', Navdata,
                                                navdataCallback)
                 rospy.spin()
+  		# this should hopefully make it so a keyboard interrupt will
+        # land the drone...
         except KeyboardInterrupt:
-                print "landing"
+                print "--landing--"
                 land()
