@@ -98,7 +98,6 @@ if __name__ == "__main__":
                 navdata_sub = rospy.Subscriber('/ardrone/navdata', Navdata,
                                                navdataCallback)
                 rospy.spin()
-
         except KeyboardInterrupt:
                 print "landing"
                 land()
