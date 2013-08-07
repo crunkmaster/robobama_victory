@@ -52,7 +52,7 @@ def navdataCallback(msg):
         
         tag_offset = abs(80 - tags_distance)
         distances = {'x': x_distance, 'y': y_distance, 
-                     'tag': tag_offset}
+                     'tag': 80}
         
         ## select the variable that needs the greatest adjustment
         ## and then only generate a trajectory based on that variable
