@@ -52,7 +52,7 @@ def navdataCallback(msg):
         
         tag_offset = abs(80 - tags_distance)
         distances = {'x': x_distance, 'y': y_distance, 
-                     'tag': tags_distance}
+                     'tag': tag_offset}
         
         ## select the variable that needs the greatest adjustment
         ## and then only generate a trajectory based on that variable
@@ -64,29 +64,23 @@ def navdataCallback(msg):
                 if x_pos > 320:
                         trajectory.linear.y = -0.1
 			print "adjusting left"
-                        clear()
                 if x_pos < 320:
                         trajectory.linear.y = 0.1
 			print "adjusting right"
-                        clear()
         elif adjustment_variable == 'y' and y_distance > thresh:
                 if y_pos > 180:
                         trajectory.linear.z = -0.2
 			print "adjusting down"
-                        clear()
                 if y_pos < 180:
                         trajectory.linear.z = 0.3
 			print "adjusting up"
-                        clear()
         elif adjustment_variable == 'tag' and tag_offset > distance_thresh:
                 if tags_distance > 80:
                         trajectory.linear.x = 0.1
                         print "adjusting forward"
-                        clear()
                 if tags_distance < 80:
                         trajectory.linear.x = -0.1
 			print "adjusting backward"
-                        clear()
                         
         flight_pub.publish(trajectory)
         
